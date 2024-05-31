@@ -122,24 +122,24 @@ func (d *Device) handleABSEvent(ie *input.InputEvent) {
 	min := d.InputDevice.AbsInfos[ie.Source.Event()][ie.Event.Code].Minimum
 	max := d.InputDevice.AbsInfos[ie.Source.Event()][ie.Event.Code].Maximum
 
-  if min < 0 {
-    canBeNegative = true
-  }
+	if min < 0 {
+		canBeNegative = true
+	}
 
-  // Normalize Value
-  if ie.Event.Value < 0 {
-    value = float64(ie.Event.Value) / math.Abs(float64(min))
-  } else {
-    value = float64(ie.Event.Value) / math.Abs(float64(max))
-  }
- 
-  // HACKJOB START
-  // Put it always between -1.0 and 1.0 so we can deadzone the center
-  if analog.DeadzoneAtCenter {
-    value = value * 2 - 1.0
- 	  canBeNegative = true
-  }
-  // HACKJOB END
+	// Normalize Value
+	if ie.Event.Value < 0 {
+		value = float64(ie.Event.Value) / math.Abs(float64(min))
+	} else {
+		value = float64(ie.Event.Value) / math.Abs(float64(max))
+	}
+
+	// HACKJOB START
+	// Put it always between -1.0 and 1.0 so we can deadzone the center
+	if analog.DeadzoneAtCenter {
+		value = value * 2 - 1.0
+		canBeNegative = true
+	}
+	// HACKJOB END
   
 
 	deadzone, ok := d.config.Deadzone.Deadzones[ie.Event.Code]
@@ -148,7 +148,6 @@ func (d *Device) handleABSEvent(ie *input.InputEvent) {
 	}
   
 	if value < 0 {
-   
 		if value > -deadzone {
 			value = 0
 		} else {
